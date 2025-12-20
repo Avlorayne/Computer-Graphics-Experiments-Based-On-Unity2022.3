@@ -22,9 +22,10 @@ public class Control : MonoBehaviour
     private List<Painter> painters = new List<Painter>();
     protected Action<Vector2> DrawMode; // 当前的绘制模式
 
-    protected List<Graphics2D> graphicsList = new List<Graphics2D>();
+    protected List<MyGraphics2D> graphicsList = new List<MyGraphics2D>();
 
-    protected Graphics2D selectedGraphic2D;
+    protected MyGraphics2D SelectedGraphics;
+    protected Action SelectGraphicAction;
 
     bool isMouseBlocked
     {
@@ -47,7 +48,7 @@ public class Control : MonoBehaviour
                     result.gameObject != this.gameObject) // 排除自身
                 {
                     isBlocked = true;
-                    Debug.Log($"[Control.isMouseBlocked] 鼠标射线被 {result.gameObject.name} 阻挡");
+                    Debug.Log($"[Control.isMouseBlocked]\n鼠标射线被 {result.gameObject.name} 阻挡");
                     break;
                 }
             }
@@ -74,19 +75,17 @@ public class Control : MonoBehaviour
     {
         Vector2 mousePos =Input.mousePosition;
         DrawMode(mousePos);
-        Debug.Log($"[Control.Draw] Set Point {mousePos}");
+        // Debug.Log($"[Control.Draw]\nSet Point {mousePos}");
     }
 
     protected void Init()
     {
-        if (CanvasPixelPainter.Instance != null)
-        {
-            Debug.Log("[Control.Init] Managed to Find CanvasPixelPainter");
-        }
-        else
-        {
-            Debug.Log("[Control.Init] Failed to Find CanvasPixelPainter");
-        }
+        // 一次性注册所有Painter子类
+        PainterFactory.AutoRegisterAllPainters();
+
+        Debug.Log(CanvasPixelPainter.Instance != null
+            ? "[Control.Init]\nManaged to Find CanvasPixelPainter"
+            : "[Control.Init]\nFailed to Find CanvasPixelPainter");
 
         if (rawImage == null)
         {
@@ -120,12 +119,12 @@ public class Control : MonoBehaviour
                 if (resultList.Count > 0)
                 {
                     graphicsList.AddRange(resultList);
-                    Debug.Log($"[Control.Button(End Paint)] {painter.GetType().Name}'s Graphics2D Added, count: {resultList.Count}" +
-                              $"\nNow the Existing Graphics2D count: {graphicsList.Count}");
+                    Debug.Log($"[Control.Button(End Paint)]\n{painter.GetType().Name}'s MyGraphics2D Added, count: {resultList.Count}" +
+                              $"\nNow the Existing MyGraphics2D count: {graphicsList.Count}");
                 }
                 else
                 {
-                    Debug.LogWarning($"[Control.Button(End Paint)] No graphics2D to add from {painter.GetType().Name}");
+                    Debug.LogWarning($"[Control.Button(End Paint)]\nNo myGraphics2D to add from {painter.GetType().Name}");
                 }
             }
         });
@@ -133,65 +132,89 @@ public class Control : MonoBehaviour
         Button btn2 = CreateButton("Clear");
         btn2.onClick.AddListener(() =>
         {
+            SelectedGraphics = null;
             graphicsList.Clear();
             CanvasPixelPainter.Instance.Clear();
-            Debug.Log($"[Control.Button(Clear)] the Graphics2D Clear. Existing Graphics2D count: {graphicsList.Count}");
+            Debug.Log($"[Control.Button(Clear)]\nthe MyGraphics2D Clear. Existing MyGraphics2D count: {graphicsList.Count}");
         });
 
-        Button btn3 = CreateButton("Null");
-        btn3.onClick.AddListener(() =>
-        {
-            DrawMode =  null;
-            selectedGraphic2D = null;
-            Debug.Log($"[Control.Button(Null)] DrawMode is Null");
-        });
+        // Button btn3 = CreateButton("Null");
+        // btn3.onClick.AddListener(() =>
+        // {
+        //     DrawMode =  null;
+        //     SelectedGraphics = null;
+        //     Debug.Log($"[Control.Button(Null)]\nDrawMode is Null");
+        // });
 
+        SelectGraphicAction += SelectGraphic;
         Button btn4 = CreateButton("Select Graphic");
         btn4.onClick.AddListener(() =>
         {
-            DrawMode = null;
-            SelectGraphic();
-            Debug.Log($"[Control.Button(Select Graphic)]");
+            Debug.Log($"[Control.Button(Select Graphic)]\n");
+            SelectGraphicAction();
         });
+    }
+
+    protected void SelectGraphicByGraphics(MyGraphics2D graphics)
+    {
+        if (graphics == null)
+        {
+            Debug.LogError("[Control.SelectGraphicByGraphics(null)]");
+            return;
+        }
+        if(graphicsList.Count == 0)
+            return;
+        if (!graphicsList.Contains(graphics))
+        {
+            Debug.LogError("[Control.SelectGraphicByGraphics]\nThe graphics list doesn't contain graphics");
+            return;
+        }
+        DrawMode = null;
+        SelectedGraphics?.Deselect();
+
+        SelectedGraphics = graphics;
+        SelectedGraphics?.Select();
+        Debug.Log($"[Control.SelectGraphicByGraphics]\nSelected graphic2D");
     }
 
     void SelectGraphic()
     {
-        selectedGraphic2D?.Deselect();
+        DrawMode = null;
+
+        SelectedGraphics?.Deselect();
         // Texture2D texture = GetComponentInChildren<RawImage>().texture as Texture2D;
         // if (texture == null)
         // {
         //     Debug.Log($"[Control.SelectGraphic] Texture is not found");
         // }
-        // selectedGraphic2D = GraphicsSelector.Select(Input.mousePosition, texture, graphicsList);
+        // SelectedGraphics = GraphicsSelector.Select(Input.mousePosition, texture, graphicsList);
 
         if(graphicsList.Count == 0)
             return;
 
-        if (selectedGraphic2D != null)
+        if (SelectedGraphics != null)
         {
-            if (graphicsList.Contains(selectedGraphic2D))
+            if (graphicsList.Contains(SelectedGraphics))
             {
-                int index = graphicsList.IndexOf(selectedGraphic2D);
-                var i = ++index;
+                int i = graphicsList.IndexOf(SelectedGraphics) + 1;
                 if (i >= 0 && i < graphicsList.Count)
                 {
-                    selectedGraphic2D = graphicsList[i];
-                    Debug.Log($"[Control.SelectGraphic] selected graphic2D[{i}]");
+                    SelectedGraphics = graphicsList[i];
+                    Debug.Log($"[Control.SelectGraphic]\nselected graphic2D[{i}]");
                 }
                 else
                 {
-                    selectedGraphic2D = null;
-                    Debug.Log($"[Control.SelectGraphic] selected graphic2D to Null");
+                    SelectedGraphics = null;
+                    Debug.Log($"[Control.SelectGraphic]\nselected graphic2D to Null");
                 }
             }
         }
         else
         {
-            selectedGraphic2D = graphicsList[0];
-            Debug.Log($"[Control.SelectGraphic] selected graphic2D[0]");
+            SelectedGraphics = graphicsList[0];
+            Debug.Log($"[Control.SelectGraphic]\nselected graphic2D[0]");
         }
-        selectedGraphic2D?.Select();
+        SelectedGraphics?.Select();
     }
 
     protected void AddPainter(Painter painter)
@@ -203,23 +226,29 @@ public class Control : MonoBehaviour
         btn.onClick.AddListener(() =>
         {
             DrawMode = painter.SetPoint;
-            Debug.Log($"[Control.Button] DrawMode Changed: {DrawMode.Target.GetType().Name}->{DrawMode.Method.Name}");
+            Debug.Log($"[Control.Button]\nDrawMode Changed: {DrawMode.Target.GetType().Name}->{DrawMode.Method.Name}");
         });
-        Debug.Log($"[Control.Button] Button onClick Event: {painter.GetType().Name}->{nameof(painter.SetPoint)}");
+        Debug.Log($"[Control.Button]\nAdd Button onClick Event: {painter.GetType().Name}->{nameof(painter.SetPoint)}");
     }
 
     // 修改 CreateButton 函数
     protected Button CreateButton(string buttonName)
     {
-        RectTransform rect = ScrollRect.content;
-        GameObject btnGo = Instantiate(button, rect);
+        GameObject btnGo = AddToScrollRect(button);
 
         Button btn = btnGo.GetComponent<Button>();
         btnGo.GetComponentInChildren<TextMeshProUGUI>().text = buttonName;
 
         buttons.Add(btn);
-        Debug.Log($"[Control.CreateButton] Add Button Bind with {buttonName}");
+        Debug.Log($"[Control.CreateButton]\nAdd Button Bind with {buttonName}");
 
         return btn;
+    }
+
+    protected GameObject AddToScrollRect(GameObject go)
+    {
+        RectTransform rect = ScrollRect.content;
+        GameObject instantiate = Instantiate(go, rect);
+        return instantiate;
     }
 }

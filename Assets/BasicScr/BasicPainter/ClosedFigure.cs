@@ -26,7 +26,7 @@ public partial class ClosedFigure : Painter
         }
         else
         {
-            Debug.LogError($"[ClosedFigure.SetPointRealize] 画线结点赋值顺序出错。Point0 {point0}, Point1 {point1}");
+            Debug.LogError($"[ClosedFigure.SetPointRealize]\n画线结点赋值顺序出错。Point0 {point0}, Point1 {point1}");
         }
         points.Add(point);
 
@@ -40,7 +40,7 @@ public partial class ClosedFigure : Painter
 
         if (first == default(Vector2) || last == default(Vector2))
         {
-            Debug.LogWarning($"[ClosedFigure.EndPaintRealize] {first}, {last}");
+            Debug.LogWarning($"[ClosedFigure.EndPaintRealize]\n{first}, {last}");
             return;
         }
         PaintLine(first, last);

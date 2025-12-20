@@ -5,14 +5,14 @@ using UnityEngine;
 
 public class GraphicsSelector
 {
-    public static Graphics2D Select(Vector2 localPos, Texture2D texture, List<Graphics2D> graphicsList, int tolerance = 2)
+    public static MyGraphics2D Select(Vector2 localPos, Texture2D texture, List<MyGraphics2D> graphicsList, int tolerance = 2)
     {
         int x = Mathf.RoundToInt(localPos.x);
         int y = Mathf.RoundToInt(localPos.y);
 
         if (texture == null)
         {
-            Debug.Log($"[GraphicsSelector.Select] Failed to Find Texture2D");
+            Debug.Log($"[GraphicsSelector.Select]\nFailed to Find Texture2D");
             return null;
         }
 
@@ -30,21 +30,21 @@ public class GraphicsSelector
             )
         ).ToArray();
 
-        Debug.Log($"[GraphicsSelector.Select] Pixels Count in Tolerance Area: {pixels.Length}");
+        Debug.Log($"[GraphicsSelector.Select]\nPixels Count in Tolerance Area: {pixels.Length}");
 
         // 判断区域内是否都是白色（使用阈值判断）
         if (pixels.All(p => IsWhiteColor(p)))
         {
-            Debug.Log($"[GraphicsSelector.Select] All pixels are white in tolerance area");
+            Debug.Log($"[GraphicsSelector.Select]\nAll pixels are white in tolerance area");
             return null;
         }
 
         // 从区域内像素中提取所有非白色的颜色
         var nonWhitePixels = pixels.Where(p => !IsWhiteColor(p)).Distinct().ToList();
-        Debug.Log($"[GraphicsSelector.Select] Non-white colors found: {nonWhitePixels.Count}");
+        Debug.Log($"[GraphicsSelector.Select]\nNon-white colors found: {nonWhitePixels.Count}");
 
         // 找出可能匹配的图形
-        var potentialGraphics = new List<Graphics2D>();
+        var potentialGraphics = new List<MyGraphics2D>();
         foreach (var graphic in graphicsList)
         {
             // 检查区域内是否有像素颜色与图形颜色匹配
@@ -57,7 +57,7 @@ public class GraphicsSelector
             }
         }
 
-        Debug.Log($"[GraphicsSelector.Select] Find Potential Graphics: {potentialGraphics.Count}");
+        Debug.Log($"[GraphicsSelector.Select]\nFind Potential Graphics: {potentialGraphics.Count}");
 
         // 如果没有匹配颜色的图形，返回null
         if (potentialGraphics.Count == 0)
@@ -74,7 +74,7 @@ public class GraphicsSelector
                         graphic.NodePoints[i + 1],
                         tolerance))
                 {
-                    Debug.Log($"[GraphicsSelector.Select] Select Graphics on Mouse Position: {localPos}");
+                    Debug.Log($"[GraphicsSelector.Select]\nSelect Graphics on Mouse AnchorPosition: {localPos}");
                     return graphic;
                 }
             }

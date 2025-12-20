@@ -22,7 +22,7 @@ public class LinePainter: Painter
         }
         else
         {
-            Debug.LogError($"[LinePainter.SetPointRealize] 画线结点赋值顺序出错。Point0 {point0}, Point1 {point1}");
+            Debug.LogError($"[LinePainter.SetPointRealize]\n画线结点赋值顺序出错。Point0 {point0}, Point1 {point1}");
         }
 
         return false;

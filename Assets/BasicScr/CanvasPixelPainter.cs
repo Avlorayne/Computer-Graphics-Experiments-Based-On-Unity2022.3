@@ -58,7 +58,7 @@ public partial class CanvasPixelPainter : MonoBehaviour
         for (int i = 0; i < clearPixels.Length; i++)
             clearPixels[i] = Color.white;
 
-        Debug.Log($"[CanvasPixelPainter.Start] Create Texture2D: width {width} height {height}");
+        Debug.Log($"[CanvasPixelPainter.Start]\nCreate Texture2D: width {width} height {height}");
 
         Clear();
         canvas.texture = texture;

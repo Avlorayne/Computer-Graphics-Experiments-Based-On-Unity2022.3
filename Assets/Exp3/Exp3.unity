@@ -255,6 +255,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1572277820}
     - target: {fileID: 4050946949833783863, guid: adfcbd97d52a2c74ba726560b9a1a2e9, type: 3}
+      propertyPath: TransformScroll
+      value: 
+      objectReference: {fileID: 8413222256684145936, guid: 5d779a61986854542b26b5e6c186431b, type: 3}
+    - target: {fileID: 4050946949833783863, guid: adfcbd97d52a2c74ba726560b9a1a2e9, type: 3}
       propertyPath: linePainter.BrushSize
       value: 3
       objectReference: {fileID: 0}
@@ -270,9 +274,13 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4344739066017284875, guid: adfcbd97d52a2c74ba726560b9a1a2e9, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4428629982986387565, guid: adfcbd97d52a2c74ba726560b9a1a2e9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000047491736
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5794439736654983224, guid: adfcbd97d52a2c74ba726560b9a1a2e9, type: 3}
       propertyPath: m_AnchorMax.x
@@ -305,6 +313,30 @@ PrefabInstance:
     - target: {fileID: 7715853413757926781, guid: adfcbd97d52a2c74ba726560b9a1a2e9, type: 3}
       propertyPath: m_AnchorMin.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8448563680953195891, guid: adfcbd97d52a2c74ba726560b9a1a2e9, type: 3}
+      propertyPath: m_ChildControlWidth
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8748017090988742220, guid: adfcbd97d52a2c74ba726560b9a1a2e9, type: 3}
+      propertyPath: m_Elasticity
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8748017090988742220, guid: adfcbd97d52a2c74ba726560b9a1a2e9, type: 3}
+      propertyPath: m_Horizontal
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8748017090988742220, guid: adfcbd97d52a2c74ba726560b9a1a2e9, type: 3}
+      propertyPath: m_MovementType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8748017090988742220, guid: adfcbd97d52a2c74ba726560b9a1a2e9, type: 3}
+      propertyPath: m_DecelerationRate
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8748017090988742220, guid: adfcbd97d52a2c74ba726560b9a1a2e9, type: 3}
+      propertyPath: m_ScrollSensitivity
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 9034985665252208872, guid: adfcbd97d52a2c74ba726560b9a1a2e9, type: 3}
       propertyPath: m_Pivot.x

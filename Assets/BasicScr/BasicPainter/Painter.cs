@@ -2,6 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+public interface IPainter
+{
+    Color PaintColor { get; set; }
+    int BrushSize { get; set; }
+
+    void SetPoint(Vector2 point);
+    MyGraphics2D[] PaintResult { get; }
+
+    // 允许重置状态（用于复用Painter实例）
+    void Reset();
+}
 
 // [Serializable]
 public abstract class Painter
@@ -12,18 +23,18 @@ public abstract class Painter
     protected Vector2 point0 = Vector2.zero;
     protected Vector2 point1 = Vector2.zero;
 
-    private List<Graphics2D> GraphicsList { get; set; } =  new List<Graphics2D>();
-    protected Graphics2D Graphics2D = null;
+    private List<MyGraphics2D> GraphicsList { get; set; } =  new List<MyGraphics2D>();
+    protected MyGraphics2D MyGraphics2D = null;
 
-    public Graphics2D[] PaintResult
+    public MyGraphics2D[] PaintResult
     {
         get
         {
             EndPaint();
-            Graphics2D[] result = GraphicsList.ToArray();
+            MyGraphics2D[] result = GraphicsList.ToArray();
             GraphicsList.Clear();
             if(result.Length != 0)
-                Debug.Log($"[{this.GetType().Name}.PaintResult] Result Graphics2D Count: {result.Length}"
+                Debug.Log($"[{this.GetType().Name}.PaintResult]\nResult MyGraphics2D Count: {result.Length}"
                           + $"\n is Can Be Selected:{string.Join(",", result.Select(g => g.CanBeSelected))}"
                           + $"\nColor: {result[0].Color}"
                           + $"\nBrushSize: {result[0].BrushSize}");
@@ -35,23 +46,23 @@ public abstract class Painter
     protected void PaintLine(Vector2 start, Vector2 end)
     {
         Vector2[] segment = CanvasPixelPainter.Instance.LinePaint(start, end, PaintColor, BrushSize);
-        Graphics2D.AddSegment(segment);
-        Debug.Log($"[{this.GetType().Name}.PaintLine] Segments Count: {Graphics2D.Segments.Count}"
-                  // + $"\n Add Segment:\n{string.Join(",", segment.Select(s => s.ToString()))}"
-                  );
+        MyGraphics2D.AddSegment(segment);
+        // Debug.Log($"[{this.GetType().Name}.PaintLine]\nSegments Count: {MyGraphics2D.Segments.Count}"
+        //           // + $"\n Add Segment:\n{string.Join(",", segment.Select(s => s.ToString()))}"
+        //           );
     }
 
     public void SetPoint(Vector2 point)
     {
-        if (Graphics2D == null)
+        if (MyGraphics2D == null)
         {
-            Graphics2D = new Graphics2D(new List<Vector2>(), new List<Vector2[]>(),
-                PaintColor, BrushSize, true, Vector2.zero);
+            MyGraphics2D = new MyGraphics2D(new List<Vector2>(), new List<Vector2[]>(), this.GetType(),
+                PaintColor, BrushSize, true, new MyTransform2D(point));
         }
 
         bool isEnd = SetPointRealize(point);
 
-        Graphics2D.AddPoint(point);
+        MyGraphics2D.AddPoint(point);
         CanvasPixelPainter.Instance.PointPaint(point, PaintColor, BrushSize, true);
 
         if (isEnd)
@@ -60,16 +71,16 @@ public abstract class Painter
 
     public void EndPaint()
     {
-        if (Graphics2D == null)
+        if (MyGraphics2D == null)
             return;
 
         EndPaintRealize();
 
-        GraphicsList.Add(Graphics2D);
-        Debug.Log($"[{this.GetType().Name}.EndPaint] EndPaint, Add a new Graphics2D to List!");
+        GraphicsList.Add(MyGraphics2D);
+        Debug.Log($"[{this.GetType().Name}.EndPaint]\nEndPaint, Add a new MyGraphics2D to List!");
 
         point0 = point1 = Vector2.zero;
-        Graphics2D = null;
+        MyGraphics2D = null;
     }
 
     protected abstract bool SetPointRealize(Vector2 point);
