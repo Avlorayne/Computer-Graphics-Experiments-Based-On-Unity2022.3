@@ -66,7 +66,9 @@ public class MyTransform2D
 
         graphics.Transform = newTransform;
         Debug.Log($"[MyTransform2D.Transform]\nGraphics Transformed:\n{graphics.MyDebug}");
+
         graphics.OverPaint();
+        graphics.Select();
     }
     #endregion
 

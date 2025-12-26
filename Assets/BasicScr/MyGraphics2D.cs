@@ -125,6 +125,7 @@ public class MyGraphics2D
             BrushSize,  // 使用相同的画笔大小
             false
         );
+
         CanvasPixelPainter.Instance?.PaintGraphics2D(clearGraphics);
 
         Debug.Log($"[MyGraphics2D.ClearOnCanvas]\nGraphics Cleared On Canvas]");
@@ -144,6 +145,7 @@ public class MyGraphics2D
 
         // 绘制高亮图形
         CanvasPixelPainter.Instance?.PaintGraphics2D(highlightGraphics);
+        CanvasPixelPainter.Instance?.PaintGraphics2D(this);
         Debug.Log($"[MyGraphics2D.Highlight]\nGraphics Highlight On Canvas");
     }
 
@@ -210,16 +212,13 @@ public class MyGraphics2D
 
     public void Select()
     {
-        if (selected)
-            return;
-
         selected = true;
 
         // // 创建高亮颜色
         // Color highlightColor = GetHighlightColor(Color);
 
         Highlight();
-        CanvasPixelPainter.Instance?.PaintGraphics2D(this);
+
     }
 
     public void Deselect()

@@ -107,27 +107,8 @@ public class Control : MonoBehaviour
 
         buttons.Clear();
 
-        Button btn1 = CreateButton("End Paint");
-        // 增添当前完成的图形
-        btn1.onClick.AddListener(() =>
-        {
-            if(DrawMode?.Target is Painter painter &&
-               graphicsList != null &&
-               painter.PaintResult is { } result)
-            {
-                var resultList = result.ToList();
-                if (resultList.Count > 0)
-                {
-                    graphicsList.AddRange(resultList);
-                    Debug.Log($"[Control.Button(End Paint)]\n{painter.GetType().Name}'s MyGraphics2D Added, count: {resultList.Count}" +
-                              $"\nNow the Existing MyGraphics2D count: {graphicsList.Count}");
-                }
-                else
-                {
-                    Debug.LogWarning($"[Control.Button(End Paint)]\nNo myGraphics2D to add from {painter.GetType().Name}");
-                }
-            }
-        });
+            // Button btn1 = CreateButton("End Paint");
+            // // 增添当前完成的图形
 
         Button btn2 = CreateButton("Clear");
         btn2.onClick.AddListener(() =>
@@ -155,18 +136,18 @@ public class Control : MonoBehaviour
         });
     }
 
-    protected void SelectGraphicByGraphics(MyGraphics2D graphics)
+    protected void SelectGraphic(MyGraphics2D graphics)
     {
         if (graphics == null)
         {
-            Debug.LogError("[Control.SelectGraphicByGraphics(null)]");
+            Debug.LogError("[Control.SelectGraphic(null)]");
             return;
         }
         if(graphicsList.Count == 0)
             return;
         if (!graphicsList.Contains(graphics))
         {
-            Debug.LogError("[Control.SelectGraphicByGraphics]\nThe graphics list doesn't contain graphics");
+            Debug.LogError("[Control.SelectGraphic]\nThe graphics list doesn't contain graphics");
             return;
         }
         DrawMode = null;
@@ -174,10 +155,10 @@ public class Control : MonoBehaviour
 
         SelectedGraphics = graphics;
         SelectedGraphics?.Select();
-        Debug.Log($"[Control.SelectGraphicByGraphics]\nSelected graphic2D");
+        Debug.Log($"[Control.SelectGraphic]\nSelected graphic2D");
     }
 
-    void SelectGraphic()
+    protected void SelectGraphic()
     {
         DrawMode = null;
 
@@ -240,9 +221,30 @@ public class Control : MonoBehaviour
         btnGo.GetComponentInChildren<TextMeshProUGUI>().text = buttonName;
 
         buttons.Add(btn);
+        btn.onClick.AddListener(EndPaint);
         Debug.Log($"[Control.CreateButton]\nAdd Button Bind with {buttonName}");
 
         return btn;
+    }
+
+    protected void EndPaint()
+    {
+        if(DrawMode?.Target is Painter painter &&
+           graphicsList != null &&
+           painter.PaintResult is { } result)
+        {
+            var resultList = result.ToList();
+            if (resultList.Count > 0)
+            {
+                graphicsList.AddRange(resultList);
+                Debug.Log($"[Control.Button(End Paint)]\n{painter.GetType().Name}'s MyGraphics2D Added, count: {resultList.Count}" +
+                          $"\nNow the Existing MyGraphics2D count: {graphicsList.Count}");
+            }
+            else
+            {
+                Debug.LogWarning($"[Control.Button(End Paint)]\nNo myGraphics2D to add from {painter.GetType().Name}");
+            }
+        }
     }
 
     protected GameObject AddToScrollRect(GameObject go)
